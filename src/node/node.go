@@ -8,7 +8,6 @@ import (
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/multiformats/go-multiaddr"
 )
@@ -21,7 +20,7 @@ type Config struct {
 	Bootstrap        string
 }
 
-func Start_host(Config Config, handlers server.HandlerMap, input types.InputData) host.Host {
+func Start_host(Config Config, handlers server.HandlerMap, input types.InputData) {
 	ctx := context.Background()
 
 	// 0.0.0.0 will listen on any interface device.
@@ -47,5 +46,4 @@ func Start_host(Config Config, handlers server.HandlerMap, input types.InputData
 	// Stating mdns service and bootstraping peers
 	start_mdns(host, Config, ctx)
 
-	return host
 }

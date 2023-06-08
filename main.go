@@ -9,9 +9,8 @@ import (
 )
 
 func Server(handlers server.HandlerMap, input types.InputData, Config node.Config) {
-	host := node.Start_host(Config, handlers, input)
+	node.Start_host(Config, handlers, input)
 
-	host.Addrs()
 	//fmt.Println(host)
 	//server.Thread(handlers, input)
 }
