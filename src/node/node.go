@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
@@ -63,33 +62,33 @@ func Start_host(Config types.Config, handlers server.HandlerMap, input types.Inp
 	boot(ctx, Config, host)
 
 	// Stating mdns service and bootstraping peers
-	go start_mdns(host, Config, ctx)
+	start_mdns(host, Config, ctx)
 
-	for {
-		// Find a peer by its ID
-		targetPeerID, err := peer.Decode("12D3KooWQXMKJFm6f3pWNHxHE8z7KqRaaDevnFKqyGahXQxj1CVN")
-		if err != nil {
-			fmt.Println("Invalid peer ID:", err)
-			return
-		}
+	// for {
+	// 	// Find a peer by its ID
+	// 	targetPeerID, err := peer.Decode("12D3KooWQXMKJFm6f3pWNHxHE8z7KqRaaDevnFKqyGahXQxj1CVN")
+	// 	if err != nil {
+	// 		fmt.Println("Invalid peer ID:", err)
+	// 		return
+	// 	}
 
-		peerInfo, err := kademliaDHT.FindPeer(context.Background(), targetPeerID)
-		if err != nil {
-			fmt.Println("Failed to find peer:", err)
-		}
+	// 	peerInfo, err := kademliaDHT.FindPeer(context.Background(), targetPeerID)
+	// 	if err != nil {
+	// 		fmt.Println("Failed to find peer:", err)
+	// 	}
 
-		// Create a stream to the peer
-		stream, err := host.NewStream(context.Background(), peerInfo.ID, protocol.ID(Config.ProtocolId))
-		if err == nil {
-			stream.Close()
-		}
+	// 	// Create a stream to the peer
+	// 	stream, err := host.NewStream(context.Background(), peerInfo.ID, protocol.ID(Config.ProtocolId))
+	// 	if err == nil {
+	// 		stream.Close()
+	// 	}
 
-		// Use the stream for communication
-		// ...
+	// 	// Use the stream for communication
+	// 	// ...
 
-		// Remember to close the stream when done
+	// 	// Remember to close the stream when done
 
-		time.Sleep(2 * time.Second)
-	}
+	// 	time.Sleep(2 * time.Second)
+	// }
 
 }
