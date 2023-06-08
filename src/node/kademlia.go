@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 
+	"github.com/Mihalic2040/Hub/src/types"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
@@ -28,7 +29,7 @@ func init_DHT(ctx context.Context, host host.Host) *dht.IpfsDHT {
 	return kademliaDHT
 }
 
-func boot(ctx context.Context, config Config, host host.Host) {
+func boot(ctx context.Context, config types.Config, host host.Host) {
 	log.Println("[DHT:Bootstrap] Running bootstrap from config: ", config.Bootstrap)
 	// Parse configuration
 	sourceMultiAddr, err := multiaddr.NewMultiaddr(fmt.Sprintf(config.Bootstrap))

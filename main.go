@@ -8,18 +8,11 @@ import (
 	"github.com/Mihalic2040/Hub/src/utils"
 )
 
-func Server(handlers server.HandlerMap, input types.InputData, Config node.Config) {
-	node.Start_host(Config, handlers, input)
-
-	//fmt.Println(host)
-	//server.Thread(handlers, input)
-}
-
 func main() {
 	//fake config
-	config := node.Config{
+	config := types.Config{
 		Host:             "0.0.0.0",
-		Port:             "43444",
+		Port:             "4344",
 		RendezvousString: "Hub",
 		ProtocolId:       "/hub/0.0.1",
 		Bootstrap:        "/ip4/0.0.0.0/tcp/4344/p2p/12D3KooWMQB9RxQHng8ALnaKcLNKgCcrAMRRYtCr2mGrfUKTmBES",
@@ -37,5 +30,5 @@ func main() {
 		"piska": tests.MyHandlerFromAppp,
 	}
 
-	Server(handlers, input, config)
+	node.Server(handlers, input, config)
 }

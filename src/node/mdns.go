@@ -3,6 +3,7 @@ package node
 import (
 	"log"
 
+	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/p2p/discovery/mdns"
@@ -28,14 +29,14 @@ func initMDNS(peerhost host.Host, rendezvous string) chan peer.AddrInfo {
 	// An hour might be a long long period in practical applications. But this is fine for us
 	ser := mdns.NewMdnsService(peerhost, rendezvous, n)
 	if err := ser.Start(); err != nil {
-		log.Println("[MDNS] Failed to start MDNS service: ", err)
+		log.Println("[MDNS] Failed to start MDNS service")
 	}
 
 	log.Println("[MDNS] Service started")
 	return n.PeerChan
 }
 
-func start_mdns(host host.Host, config Config, ctx context.Context) {
+func start_mdns(host host.Host, config types.Config, ctx context.Context) {
 
 	peerChan := initMDNS(host, config.RendezvousString)
 
