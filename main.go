@@ -3,10 +3,17 @@ package main
 import (
 	"github.com/Mihalic2040/Hub/src/node"
 	"github.com/Mihalic2040/Hub/src/server"
-	"github.com/Mihalic2040/Hub/src/tests"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/Mihalic2040/Hub/src/utils"
 )
+
+func MyHandler(input interface{}) (output interface{}, err error) {
+	// Do some processing with the input data
+	// ...
+
+	// Return the output data and no error
+	return input, nil
+}
 
 func main() {
 	//fake config
@@ -20,14 +27,13 @@ func main() {
 
 	//fake input
 	input := types.InputData{
-		HandlerName: "piska",
+		HandlerName: "MyHandler",
 		Input:       50,
 	}
 
 	// runing server
 	handlers := server.HandlerMap{
-		utils.GetFunctionName(tests.MyHandlerFromApp): tests.MyHandlerFromApp,
-		"piska": tests.MyHandlerFromAppp,
+		utils.GetFunctionName(MyHandler): MyHandler,
 	}
 
 	node.Server(handlers, input, config)
