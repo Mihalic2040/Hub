@@ -3,6 +3,7 @@ package node
 import (
 	"bufio"
 	"fmt"
+	"log"
 
 	"github.com/libp2p/go-libp2p/core/network"
 )
@@ -12,6 +13,8 @@ func stream_handler(stream network.Stream) {
 
 	// Create a buffer stream for non blocking read and write.
 	rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
+
+	log.Println("Stream handled")
 
 	fmt.Println(rw)
 

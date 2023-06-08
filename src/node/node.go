@@ -32,11 +32,17 @@ func Start_host(Config Config, handlers server.HandlerMap, input types.InputData
 		libp2p.ListenAddrs(sourceMultiAddr),
 	)
 
-	log.Printf("\n[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
+	log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
 
 	// Set a function as stream handler.
 	// This function is called when a peer initiates a connection and starts a stream with this peer.
 	host.SetStreamHandler(protocol.ID(Config.ProtocolId), stream_handler)
+
+	//Init KDHT
+	kademliaDHT := init_DHT(ctx, host)
+	kademliaDHT.Context()
+	// boot from config
+	boot(ctx, Config, host)
 
 	// Stating mdns service and bootstraping peers
 	start_mdns(host, Config, ctx)

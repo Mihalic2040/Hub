@@ -20,10 +20,10 @@ func main() {
 	//fake config
 	config := node.Config{
 		Host:             "0.0.0.0",
-		Port:             "4444",
+		Port:             "43444",
 		RendezvousString: "Hub",
 		ProtocolId:       "/hub/0.0.1",
-		Bootstrap:        "0.0.0.0",
+		Bootstrap:        "/ip4/0.0.0.0/tcp/4344/p2p/12D3KooWMQB9RxQHng8ALnaKcLNKgCcrAMRRYtCr2mGrfUKTmBES",
 	}
 
 	//fake input
