@@ -19,10 +19,11 @@ func Server(handlers server.HandlerMap, input types.InputData, Config node.Confi
 func main() {
 	//fake config
 	config := node.Config{
-		Host:       "0.0.0.0",
-		Port:       "4441",
-		ProtocolId: "/hub/0.0.1",
-		Bootstrap:  "0.0.0.0",
+		Host:             "0.0.0.0",
+		Port:             "4444",
+		RendezvousString: "Hub",
+		ProtocolId:       "/hub/0.0.1",
+		Bootstrap:        "0.0.0.0",
 	}
 
 	//fake input

@@ -1,6 +1,7 @@
 package node
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -8,17 +9,20 @@ import (
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/host"
+	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/multiformats/go-multiaddr"
 )
 
 type Config struct {
-	Host       string
-	Port       string
-	ProtocolId string
-	Bootstrap  string
+	Host             string
+	Port             string
+	RendezvousString string
+	ProtocolId       string
+	Bootstrap        string
 }
 
 func Start_host(Config Config, handlers server.HandlerMap, input types.InputData) host.Host {
+	ctx := context.Background()
 
 	// 0.0.0.0 will listen on any interface device.
 
@@ -29,9 +33,13 @@ func Start_host(Config Config, handlers server.HandlerMap, input types.InputData
 	)
 
 	log.Printf("\n[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
+
 	// Set a function as stream handler.
 	// This function is called when a peer initiates a connection and starts a stream with this peer.
-	//host.SetStreamHandler(protocol.ID(Config.ProtocolId), stream_handler)
+	host.SetStreamHandler(protocol.ID(Config.ProtocolId), stream_handler)
+
+	// Stating mdns service and bootstraping peers
+	start_mdns(host, Config, ctx)
 
 	return host
 }
