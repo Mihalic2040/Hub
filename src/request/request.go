@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func New(host types.Host, peerID string) (*api.Response, error) {
+func New(host types.Host, peerID string, data *api.Request) (*api.Response, error) {
 	// Find a peer by its ID
 	targetPeerID, err := peer.Decode(peerID)
 	if err != nil {
@@ -35,10 +35,6 @@ func New(host types.Host, peerID string) (*api.Response, error) {
 	rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
 
 	// Create a request
-	data := &api.Request{
-		User:    "vl;kfdkvmofivmkldfipkvdfo;jvnmbodfnbpodfmbodfvbndfopj[vbjmndfjobndf bupodfnbio[dfsmbpiodfgnbi[dfonbgdfpo[]bmxipfbn tdfiogbnpdfgi;b ipgxdfnbiopfgnbipgfdnbip[gfdnbp[io'fgnbpi[fgdnbp[fgsdb p[fgb fgp[iobnfgip[bn fgodbndfgonbfg bpoblmvdfmv",
-		Handler: "pidfbkopgbdfpkmvobjdfnvbinfdiovbjmfdopvbjndfjkl;vbnmdfikop;vbn dfip[vbmdfionbdfjklpbndfobpfdnbiopfdnboidfnbuoidfbndfiopbnfdip[bndfuiobnfduio[bndfipobndfoinbdfouipbnodfpnbfvbnpodfpibmdfiovbnmdfovbndf",
-	}
 
 	// Serialize the request to bytes
 	bytes, err := proto.Marshal(data)

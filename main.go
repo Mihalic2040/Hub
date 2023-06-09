@@ -13,12 +13,12 @@ import (
 	"github.com/Mihalic2040/Hub/src/utils"
 )
 
-func MyHandler(input interface{}) (response api.Response, err error) {
+func MyHandler(input *api.Request) (response api.Response, err error) {
 	// Do some processing with the input data
 	// ...
 
 	// Return the output data and no error
-	return server.Response("Hello from handler", 200), nil
+	return server.Response(input.Payload, 200), nil
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +30,14 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := request.New(host, peerID)
+	// create request
+	data := api.Request{
+		User:    "Hello",
+		Payload: "Hello payload",
+		Handler: "MyHandler",
+	}
+
+	response, err := request.New(host, peerID, &data)
 	if err != nil {
 		log.Println("Error creating request: ", err)
 	}
@@ -62,7 +69,7 @@ func main() {
 
 	http.HandleFunc("/", handleRequest)
 	fmt.Println("Server started on http://localhost:8080")
-	http.ListenAndServe(":8081", nil)
+	http.ListenAndServe(":8080", nil)
 }
 
 // for {

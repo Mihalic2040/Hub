@@ -12,7 +12,7 @@ func Thread(handlers HandlerMap, data *api.Request) (api.Response, error) {
 	handlerName := data.Handler
 	handler, ok := handlers[handlerName]
 	if !ok {
-		fmt.Printf("Handler '%s' not found\n", handlerName)
+		//fmt.Printf("Handler '%s' not found\n", handlerName)
 		return api.Response{
 			Payload: "Handler not found",
 			Status:  500,
@@ -20,7 +20,7 @@ func Thread(handlers HandlerMap, data *api.Request) (api.Response, error) {
 	}
 
 	// Call the handler function with the input data
-	output, err := handler(data.Payload)
+	output, err := handler(data)
 	//handler(inputData)
 	if err != nil {
 		fmt.Printf("Error executing handler: %v\n", err)

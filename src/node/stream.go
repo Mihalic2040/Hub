@@ -12,7 +12,7 @@ import (
 )
 
 func stream_handler(stream network.Stream, handlers server.HandlerMap) {
-	log.Println("New stream!!")
+	//log.Println("New stream!!")
 	rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
 
 	// Create a data channel to receive the information
