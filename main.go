@@ -6,18 +6,19 @@ import (
 	"net/http"
 
 	"github.com/Mihalic2040/Hub/src/node"
+	"github.com/Mihalic2040/Hub/src/proto/api"
 	"github.com/Mihalic2040/Hub/src/request"
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/Mihalic2040/Hub/src/utils"
 )
 
-func MyHandler(input interface{}) (output interface{}, err error) {
+func MyHandler(input interface{}) (response api.Response, err error) {
 	// Do some processing with the input data
 	// ...
 
 	// Return the output data and no error
-	return input, nil
+	return server.Response("Hello from handler", 200), nil
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {

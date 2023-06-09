@@ -10,4 +10,5 @@ message Request {
 
 message Response {
     string payload = 1;
-}
+    int64 status = 2;
+  }

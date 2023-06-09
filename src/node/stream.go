@@ -49,12 +49,9 @@ func stream_handler(stream network.Stream, handlers server.HandlerMap) {
 
 	// Start data processing thread
 
-	log.Println(req)
+	response, err := server.Thread(handlers, req)
 
 	// Send the response back to the client
-	response := api.Response{
-		Payload: "Responklgdfmklgkldfgmdfse",
-	}
 
 	// Send the response to the stream
 	response_b, err := proto.Marshal(&response)
