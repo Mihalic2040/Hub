@@ -1,31 +1,38 @@
-package tests
+package main
 
-func MyHandlerFromApp(input interface{}) (output interface{}, err error) {
+import (
+	"context"
+
+	"github.com/Mihalic2040/Hub/src/node"
+	"github.com/Mihalic2040/Hub/src/proto/api"
+	"github.com/Mihalic2040/Hub/src/server"
+	"github.com/Mihalic2040/Hub/src/types"
+	"github.com/Mihalic2040/Hub/src/utils"
+)
+
+func MyHandler(input *api.Request) (response api.Response, err error) {
 	// Do some processing with the input data
 	// ...
 
 	// Return the output data and no error
-	return input, nil
+	return server.Response(input.Payload, 200), nil
 }
 
-func MyHandlerFromAppp(input interface{}) (output interface{}, err error) {
+func main() {
+	ctx := context.Background()
+	//fake config
+	config := types.Config{
+		Host:             "0.0.0.0",
+		Port:             "0",
+		RendezvousString: "Hub",
+		ProtocolId:       "/hub/0.0.1",
+		Bootstrap:        "/ip4/0.0.0.0/tcp/4344/p2p/12D3KooWMQB9RxQHng8ALnaKcLNKgCcrAMRRYtCr2mGrfUKTmBES",
+	}
 
-	data := input.(int) * 2
+	// runing server
+	handlers := server.HandlerMap{
+		utils.GetFunctionName(MyHandler): MyHandler,
+	}
 
-	return data, nil
+	node.Server(ctx, handlers, config, true)
 }
-
-// func main() {
-// 	//fake input
-// 	input := app.InputData{
-// 		HandlerName: "piska",
-// 		Input:       50,
-// 	}
-
-// 	// runing server
-// 	handlers := HandlerMap{
-// 		app.GetFunctionName(MyHandlerFromApp): MyHandlerFromApp,
-// 		"piska":                               MyHandlerFromAppp,
-// 	}
-
-// }
