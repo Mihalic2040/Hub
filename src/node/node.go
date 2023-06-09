@@ -13,15 +13,14 @@ import (
 	"github.com/multiformats/go-multiaddr"
 )
 
-func Server(handlers server.HandlerMap, Config types.Config, serve bool) types.Host {
-	host := Start_host(Config, handlers, serve)
+func Server(ctx context.Context, handlers server.HandlerMap, Config types.Config, serve bool) types.Host {
+	host := Start_host(ctx, Config, handlers, serve)
 	//fmt.Println(host)
 	//server.Thread(handlers, input)
 	return host
 }
 
-func Start_host(Config types.Config, handlers server.HandlerMap, serve bool) types.Host {
-	ctx := context.Background()
+func Start_host(ctx context.Context, Config types.Config, handlers server.HandlerMap, serve bool) types.Host {
 
 	// 0.0.0.0 will listen on any interface device.
 

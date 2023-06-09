@@ -1,5 +1,7 @@
 module github.com/Mihalic2040/Hub
 
+
+
 go 1.20
 
 require (

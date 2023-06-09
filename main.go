@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -51,6 +52,7 @@ var (
 )
 
 func main() {
+	ctx := context.Background()
 	//fake config
 	config := types.Config{
 		Host:             "0.0.0.0",
@@ -65,7 +67,7 @@ func main() {
 		utils.GetFunctionName(MyHandler): MyHandler,
 	}
 
-	host = node.Server(handlers, config, false)
+	host = node.Server(ctx, handlers, config, false)
 
 	http.HandleFunc("/", handleRequest)
 	fmt.Println("Server started on http://localhost:8080")
