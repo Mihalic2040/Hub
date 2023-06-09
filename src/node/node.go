@@ -8,52 +8,41 @@ import (
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/libp2p/go-libp2p"
-	dht "github.com/libp2p/go-libp2p-kad-dht"
-	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/multiformats/go-multiaddr"
 )
 
-func Server(handlers server.HandlerMap, input types.InputData, Config types.Config) {
-	Start_host(Config, handlers, input)
+func Server(handlers server.HandlerMap, Config types.Config, serve bool) types.Host {
+	host := Start_host(Config, handlers, serve)
 	//fmt.Println(host)
 	//server.Thread(handlers, input)
+	return host
 }
 
-func printPeers(peer peer.AddrInfo) {
-	fmt.Println("Connected peers:")
-	fmt.Println(peer.ID)
-	for _, addr := range peer.Addrs {
-		fmt.Println("  ", addr)
-	}
-}
-
-func findAllPeers(dhtInstance *dht.IpfsDHT) (peer.AddrInfo, error) {
-	// Find all peers in the DHT
-	peers, err := dhtInstance.FindPeer(context.Background(), "")
-	if err != nil {
-		log.Println("fff")
-	}
-
-	return peers, nil
-}
-
-func Start_host(Config types.Config, handlers server.HandlerMap, input types.InputData) {
+func Start_host(Config types.Config, handlers server.HandlerMap, serve bool) types.Host {
 	ctx := context.Background()
 
 	// 0.0.0.0 will listen on any interface device.
 
-	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s", Config.Host, Config.Port))
+	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/", Config.Host, Config.Port))
 
 	host, _ := libp2p.New(
 		libp2p.ListenAddrs(sourceMultiAddr),
 	)
 
-	log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
+	//log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
+
+	log.Println("[*] Your Id is:", host.ID().Pretty())
+	log.Println("[*] Your Multiaddress is:", host.Addrs())
 
 	// Set a function as stream handler.
 	// This function is called when a peer initiates a connection and starts a stream with this peer.
-	host.SetStreamHandler(protocol.ID(Config.ProtocolId), stream_handler)
+	host.SetStreamHandler(protocol.ID(Config.ProtocolId), func(stream network.Stream) {
+		//log.Println("DEBUG: new steam in handler")
+		//log.Println(handlers)
+		stream_handler(stream, handlers)
+	})
 
 	//Init KDHT
 	kademliaDHT := init_DHT(ctx, host)
@@ -62,33 +51,44 @@ func Start_host(Config types.Config, handlers server.HandlerMap, input types.Inp
 	boot(ctx, Config, host)
 
 	// Stating mdns service and bootstraping peers
-	start_mdns(host, Config, ctx)
+	if serve == true {
+		start_mdns(host, Config, ctx)
+	} else {
+		go start_mdns(host, Config, ctx)
+	}
 
-	// for {
-	// 	// Find a peer by its ID
-	// 	targetPeerID, err := peer.Decode("12D3KooWQXMKJFm6f3pWNHxHE8z7KqRaaDevnFKqyGahXQxj1CVN")
-	// 	if err != nil {
-	// 		fmt.Println("Invalid peer ID:", err)
-	// 		return
-	// 	}
+	server := types.Host{
+		Host:   host,
+		Dht:    kademliaDHT,
+		Config: Config,
+	}
 
-	// 	peerInfo, err := kademliaDHT.FindPeer(context.Background(), targetPeerID)
-	// 	if err != nil {
-	// 		fmt.Println("Failed to find peer:", err)
-	// 	}
-
-	// 	// Create a stream to the peer
-	// 	stream, err := host.NewStream(context.Background(), peerInfo.ID, protocol.ID(Config.ProtocolId))
-	// 	if err == nil {
-	// 		stream.Close()
-	// 	}
-
-	// 	// Use the stream for communication
-	// 	// ...
-
-	// 	// Remember to close the stream when done
-
-	// 	time.Sleep(2 * time.Second)
-	// }
-
+	return server
 }
+
+// for {
+// 	// Find a peer by its ID
+// 	targetPeerID, err := peer.Decode("12D3KooWQXMKJFm6f3pWNHxHE8z7KqRaaDevnFKqyGahXQxj1CVN")
+// 	if err != nil {
+// 		fmt.Println("Invalid peer ID:", err)
+// 		return
+// 	}
+
+// 	peerInfo, err := kademliaDHT.FindPeer(context.Background(), targetPeerID)
+// 	if err != nil {
+// 		fmt.Println("Failed to find peer:", err)
+// 	}
+
+// 	// Create a stream to the peer
+// 	stream, err := host.NewStream(context.Background(), peerInfo.ID, protocol.ID(Config.ProtocolId))
+// 	if err == nil {
+// 		stream.Close()
+// 	}
+
+// 	// Use the stream for communication
+// 	// ...
+
+// 	// Remember to close the stream when done
+
+// 	time.Sleep(2 * time.Second)
+// }
