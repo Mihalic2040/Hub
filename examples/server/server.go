@@ -25,10 +25,10 @@ func main() {
 	config := types.Config{
 		Host:             "0.0.0.0",
 		Port:             "0",
-		Secret:           "VICTOR",
+		Secret:           "SERVER",
 		RendezvousString: "Hub",
 		ProtocolId:       "/hub/0.0.1",
-		Bootstrap:        "/ip4/127.0.0.1/tcp/33093/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
+		Bootstrap:        "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
 	}
 
 	// runing server

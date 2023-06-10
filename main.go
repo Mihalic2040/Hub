@@ -3,12 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/Mihalic2040/Hub/src/node"
 	"github.com/Mihalic2040/Hub/src/proto/api"
-	"github.com/Mihalic2040/Hub/src/request"
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/Mihalic2040/Hub/src/utils"
@@ -25,26 +23,11 @@ func MyHandler(input *api.Request) (response api.Response, err error) {
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	// Get the peer ID from the request
 	// curl http://localhost:8080/ -X POST -d "peer_id="
-	peerID := r.FormValue("peer_id")
-	if peerID == "" {
-		http.Error(w, "Missing peer ID", http.StatusBadRequest)
-		return
-	}
 
-	// create request
-	data := api.Request{
-		User:    "Hello",
-		Payload: "Hello payload",
-		Handler: "MyHandler",
-	}
+	peers := host.Host.Peerstore().Peers()
+	peers.String()
 
-	response, err := request.New(host, peerID, &data)
-	if err != nil {
-		log.Println("Error creating request: ", err)
-	}
-	//fmt.Println(response)
-
-	fmt.Fprintf(w, response.Payload)
+	fmt.Fprintf(w, peers.String())
 }
 
 var (
@@ -60,7 +43,7 @@ func main() {
 		Secret:           "MIHALIC2040",
 		RendezvousString: "Hub",
 		ProtocolId:       "/hub/0.0.1",
-		Bootstrap:        "/ip4/127.0.0.1/tcp/33093/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
+		Bootstrap:        "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
 	}
 
 	// runing server
@@ -70,21 +53,21 @@ func main() {
 
 	host = node.Server(ctx, handlers, config, false)
 
-	go func() {
+	// go func() {
 
-		for {
-			peer_id := "12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP"
-			host.Dht.RefreshRoutingTable()
-			data := api.Request{
-				Payload: "Hello",
-				Handler: "MyHandler",
-			}
-			res, _ := request.New(host, peer_id, &data)
+	// 	for {
+	// 		peer_id := "12D3KooWDGDG3iwx75D8qPdpW24EDB1ZqTQBuiFtPaEhU3azUXmn"
+	// 		host.Dht.RefreshRoutingTable()
+	// 		data := api.Request{
+	// 			Payload: "Hello",
+	// 			Handler: "MyHandler",
+	// 		}
+	// 		res, _ := request.New(host, peer_id, &data)
 
-			log.Println(res)
-		}
-	}()
+	// 		log.Println(res)
+	// 	}
+	// }()
 
 	http.HandleFunc("/", handleRequest)
-	http.ListenAndServe(":8081", nil)
+	http.ListenAndServe(":8080", nil)
 }

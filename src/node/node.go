@@ -8,10 +8,11 @@ import (
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/Mihalic2040/Hub/src/utils"
-	"github.com/fatih/color"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
+	quic "github.com/libp2p/go-libp2p/p2p/transport/quic"
+	"github.com/libp2p/go-libp2p/p2p/transport/tcp"
 	"github.com/multiformats/go-multiaddr"
 )
 
@@ -27,6 +28,7 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	// 0.0.0.0 will listen on any interface device.
 
 	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/", Config.Host, Config.Port))
+	sourceMultiAddrQuic, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/udp/%s/quic", Config.Host, Config.Port))
 
 	// TEST
 
@@ -35,10 +37,21 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 		log.Fatal(err)
 	}
 
+	taranspors := libp2p.ChainOptions(
+		libp2p.Transport(tcp.NewTCPTransport),
+		libp2p.Transport(quic.NewTransport),
+	)
+
+	addrs := libp2p.ListenAddrStrings(
+		sourceMultiAddr.String(),
+		sourceMultiAddrQuic.String(),
+	)
+
 	// CREATE HOST
 	host, _ := libp2p.New(
-		libp2p.ListenAddrs(sourceMultiAddr),
+		addrs,
 		libp2p.Identity(prvKey),
+		taranspors,
 
 		//Cool stuff
 		libp2p.EnableHolePunching(),
@@ -46,8 +59,8 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 
 	//log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
 
-	green := color.New(color.FgGreen).SprintFunc()
-	log.Printf("[*] Your ID is: %s", green(host.ID().Pretty()))
+	//green := color.New(color.FgGreen).SprintFunc()
+	//log.Printf("[*] Your ID is: %s", green(host.ID().Pretty()))
 	log.Println("[*] Your Multiaddress is:", host.Addrs())
 
 	// Set a function as stream handler.
