@@ -43,7 +43,7 @@ func stream_handler(stream network.Stream, handlers server.HandlerMap) {
 
 	// Decode the protobuf data
 	if err := proto.Unmarshal(data, req); err != nil {
-		log.Println("Error decoding protobuf data:", err)
+		log.Println("[SERVER] Error decoding protobuf data:", err)
 		return
 	}
 
@@ -56,24 +56,26 @@ func stream_handler(stream network.Stream, handlers server.HandlerMap) {
 	// Send the response to the stream
 	response_b, err := proto.Marshal(&response)
 	if err != nil {
-		log.Println("Error encoding protobuf data:", err)
+		log.Println("[SERVER] Error encoding protobuf data:", err)
 
 	}
 
 	// Write the request bytes to the stream
 	if _, err := rw.Write(response_b); err != nil {
-		fmt.Println("Error writing protobuf response:", err)
+		fmt.Println("[SERVER] Error writing protobuf response:", err)
 
 	}
 
 	// Flush the writer to ensure the data is sent
 	if err := rw.Flush(); err != nil {
-		log.Println("Error flush cahanel:", err)
+		log.Println("[SERVER] Error flush cahanel:", err)
 
 	}
 
 	// Close the stream
 	stream.Close()
+
+	log.Println("[SERVER] ", "Protocol:", stream.Conn().ConnState().Transport, "Remote:", stream.Conn().RemotePeer(), "Status:", response.Status)
 
 }
 

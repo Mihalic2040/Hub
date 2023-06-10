@@ -1,12 +1,15 @@
 module github.com/Mihalic2040/Hub
 
-
-
 go 1.20
 
 require (
 	github.com/libp2p/go-libp2p v0.27.5
 	github.com/multiformats/go-multiaddr v0.9.0
+)
+
+require (
+	github.com/fatih/color v1.15.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
 )
 
 require (

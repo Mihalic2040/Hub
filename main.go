@@ -57,9 +57,10 @@ func main() {
 	config := types.Config{
 		Host:             "0.0.0.0",
 		Port:             "0",
+		Secret:           "MIHALIC2040",
 		RendezvousString: "Hub",
 		ProtocolId:       "/hub/0.0.1",
-		Bootstrap:        "/ip4/0.0.0.0/tcp/4344/p2p/12D3KooWMQB9RxQHng8ALnaKcLNKgCcrAMRRYtCr2mGrfUKTmBES",
+		Bootstrap:        "/ip4/127.0.0.1/tcp/33093/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
 	}
 
 	// runing server
@@ -69,34 +70,21 @@ func main() {
 
 	host = node.Server(ctx, handlers, config, false)
 
+	go func() {
+
+		for {
+			peer_id := "12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP"
+			host.Dht.RefreshRoutingTable()
+			data := api.Request{
+				Payload: "Hello",
+				Handler: "MyHandler",
+			}
+			res, _ := request.New(host, peer_id, &data)
+
+			log.Println(res)
+		}
+	}()
+
 	http.HandleFunc("/", handleRequest)
-	fmt.Println("Server started on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8081", nil)
 }
-
-// for {
-// 	// Find a peer by its ID
-// 	targetPeerID, err := peer.Decode("12D3KooWStR9RTNfhHrGrPwph3itjZZFxHEu6wV4ph2G4oFtHARw")
-// 	if err != nil {
-// 		fmt.Println("Invalid peer ID:", err)
-// 		return
-// 	}
-
-// 	peerInfo, err := dht.FindPeer(context.Background(), targetPeerID)
-// 	if err != nil {
-// 		fmt.Println("Failed to find peer:", err)
-// 	}
-
-// 	// Create a stream to the peer
-// 	stream, err := host.NewStream(context.Background(), peerInfo.ID, protocol.ID(config.ProtocolId))
-// 	if err == nil {
-// 		stream.Close()
-// 	}
-
-// 	// Use the stream for communication
-// 	// ...
-
-// 	// Remember to close the stream when done
-
-// 	time.Sleep(2 * time.Second)
-// }

@@ -44,7 +44,7 @@ func start_mdns(host host.Host, config types.Config, ctx context.Context) {
 	// TODO: Rewrite to bootstrap to DHT
 	for { // allows multiple peers to join
 		peer := <-peerChan // will block untill we discover a peer
-		log.Println("[MDNS] Found peer:", peer)
+		log.Println("[MDNS] Found peer:", peer.ID, "Address:", peer.Addrs)
 
 		if err := host.Connect(ctx, peer); err != nil {
 			log.Println("[MDNS] Connection failed:", err)

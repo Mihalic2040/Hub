@@ -23,7 +23,7 @@ func Thread(handlers HandlerMap, data *api.Request) (api.Response, error) {
 	output, err := handler(data)
 	//handler(inputData)
 	if err != nil {
-		fmt.Printf("Error executing handler: %v\n", err)
+		fmt.Printf("[SERVER: Thread] Error executing handler: %v\n", err)
 		return api.Response{
 			Payload: err.Error(),
 			Status:  500,

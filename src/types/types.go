@@ -13,6 +13,7 @@ type InputData struct {
 type Config struct {
 	Host             string
 	Port             string
+	Secret           string
 	RendezvousString string
 	ProtocolId       string
 	Bootstrap        string

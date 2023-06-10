@@ -7,6 +7,8 @@ import (
 
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
+	"github.com/Mihalic2040/Hub/src/utils"
+	"github.com/fatih/color"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
@@ -26,13 +28,26 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 
 	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/", Config.Host, Config.Port))
 
+	// TEST
+
+	prvKey, err := utils.GeneratePrivateKeyFromString(Config.Secret)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// CREATE HOST
 	host, _ := libp2p.New(
 		libp2p.ListenAddrs(sourceMultiAddr),
+		libp2p.Identity(prvKey),
+
+		//Cool stuff
+		libp2p.EnableHolePunching(),
 	)
 
 	//log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
 
-	log.Println("[*] Your Id is:", host.ID().Pretty())
+	green := color.New(color.FgGreen).SprintFunc()
+	log.Printf("[*] Your ID is: %s", green(host.ID().Pretty()))
 	log.Println("[*] Your Multiaddress is:", host.Addrs())
 
 	// Set a function as stream handler.
