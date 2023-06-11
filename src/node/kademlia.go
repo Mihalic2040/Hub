@@ -30,6 +30,9 @@ func init_DHT(ctx context.Context, host host.Host) *dht.IpfsDHT {
 }
 
 func boot(ctx context.Context, config types.Config, host host.Host) {
+	if config.Bootstrap == "" {
+		return
+	}
 	log.Println("[DHT:Bootstrap] Running bootstrap from config: ", config.Bootstrap)
 	// Parse configuration
 	sourceMultiAddr, err := multiaddr.NewMultiaddr(fmt.Sprintf(config.Bootstrap))

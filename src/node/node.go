@@ -8,9 +8,11 @@ import (
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/Mihalic2040/Hub/src/utils"
+	"github.com/fatih/color"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
+	"github.com/libp2p/go-libp2p/p2p/muxer/mplex"
 	quic "github.com/libp2p/go-libp2p/p2p/transport/quic"
 	"github.com/libp2p/go-libp2p/p2p/transport/tcp"
 	"github.com/multiformats/go-multiaddr"
@@ -42,6 +44,10 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 		libp2p.Transport(quic.NewTransport),
 	)
 
+	muxers := libp2p.ChainOptions(
+		libp2p.Muxer("/mplex/", mplex.DefaultTransport),
+	)
+
 	addrs := libp2p.ListenAddrStrings(
 		sourceMultiAddr.String(),
 		sourceMultiAddrQuic.String(),
@@ -52,15 +58,16 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 		addrs,
 		libp2p.Identity(prvKey),
 		taranspors,
+		muxers,
 
-		//Cool stuff
+		//Cool stuff'
 		libp2p.EnableHolePunching(),
 	)
 
 	//log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
 
-	//green := color.New(color.FgGreen).SprintFunc()
-	//log.Printf("[*] Your ID is: %s", green(host.ID().Pretty()))
+	green := color.New(color.FgGreen).SprintFunc()
+	log.Printf("[*] Your ID is: %s", green(host.ID().Pretty()))
 	log.Println("[*] Your Multiaddress is:", host.Addrs())
 
 	// Set a function as stream handler.
@@ -76,6 +83,8 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	kademliaDHT.Context()
 	// boot from config
 	boot(ctx, Config, host)
+
+	go rendezvous(ctx, host, kademliaDHT, Config)
 
 	// Stating mdns service and bootstraping peers
 	if serve == true {

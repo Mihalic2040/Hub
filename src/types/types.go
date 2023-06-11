@@ -11,12 +11,12 @@ type InputData struct {
 }
 
 type Config struct {
-	Host             string
-	Port             string
-	Secret           string
-	RendezvousString string
-	ProtocolId       string
-	Bootstrap        string
+	Host       string
+	Port       string
+	Secret     string
+	Rendezvous string
+	ProtocolId string
+	Bootstrap  string
 }
 
 type Host struct {

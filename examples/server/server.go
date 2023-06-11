@@ -23,12 +23,12 @@ func main() {
 	ctx := context.Background()
 	//fake config
 	config := types.Config{
-		Host:             "0.0.0.0",
-		Port:             "0",
-		Secret:           "SERVER",
-		RendezvousString: "Hub",
-		ProtocolId:       "/hub/0.0.1",
-		Bootstrap:        "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
+		Host:       "0.0.0.0",
+		Port:       "0",
+		Secret:     "SERVER",
+		Rendezvous: "Hub",
+		ProtocolId: "/hub/0.0.1",
+		Bootstrap:  "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
 	}
 
 	// runing server

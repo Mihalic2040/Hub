@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/fatih/color v1.15.0 // indirect
+	github.com/libp2p/go-mplex v0.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 )
 

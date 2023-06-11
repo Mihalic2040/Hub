@@ -38,7 +38,7 @@ func initMDNS(peerhost host.Host, rendezvous string) chan peer.AddrInfo {
 
 func start_mdns(host host.Host, config types.Config, ctx context.Context) {
 
-	peerChan := initMDNS(host, config.RendezvousString)
+	peerChan := initMDNS(host, config.Rendezvous)
 
 	// This is test shit!!!!!
 	// TODO: Rewrite to bootstrap to DHT
