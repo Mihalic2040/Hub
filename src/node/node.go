@@ -65,6 +65,7 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 		libp2p.EnableHolePunching(),
 		libp2p.NATPortMap(),
 		libp2p.EnableNATService(),
+		libp2p.EnableRelayService(),
 	)
 
 	//log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
@@ -91,7 +92,7 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	if serve == true {
 		start_mdns(host, Config, ctx)
 	} else {
-		//go start_mdns(host, Config, ctx)
+		go start_mdns(host, Config, ctx)
 	}
 
 	server := types.Host{

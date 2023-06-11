@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 
 	"github.com/Mihalic2040/Hub/src/node"
 	"github.com/Mihalic2040/Hub/src/proto/api"
@@ -36,11 +35,6 @@ func main() {
 	handlers := server.HandlerMap{
 		utils.GetFunctionName(MyHandler): MyHandler,
 	}
-
-	host := node.Server(ctx, handlers, config, true)
-
-	for {
-		log.Println(host.Host.Peerstore().Peers())
-	}
+	node.Server(ctx, handlers, config, true)
 
 }
