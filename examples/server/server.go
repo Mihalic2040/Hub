@@ -24,11 +24,12 @@ func main() {
 	//fake config
 	config := types.Config{
 		Host:       "0.0.0.0",
-		Port:       "0",
+		Port:       "6666",
 		Secret:     "SERVER",
 		Rendezvous: "Hub",
+		DHTServer:  true,
 		ProtocolId: "/hub/0.0.1",
-		Bootstrap:  "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWCjZ7VQMu1jtJvisqpUcwqZUcUwJnikPbxqMijALZShCP",
+		Bootstrap:  "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4",
 	}
 
 	// runing server
@@ -39,7 +40,7 @@ func main() {
 	host := node.Server(ctx, handlers, config, true)
 
 	for {
-		log.Println(host.Dht.RoutingTable().ListPeers())
+		log.Println(host.Host.Peerstore().Peers())
 	}
 
 }

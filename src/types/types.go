@@ -17,6 +17,7 @@ type Config struct {
 	Rendezvous string
 	ProtocolId string
 	Bootstrap  string
+	DHTServer  bool
 }
 
 type Host struct {

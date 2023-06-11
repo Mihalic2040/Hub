@@ -7,3 +7,7 @@ lib:
 
 proto:
 	protoc --go_out=. --go_opt=paths=source_relative src/proto/api/protocol.proto 
+
+server:
+	go build -o build/server examples/server/server.go
+	./build/server

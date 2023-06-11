@@ -54,6 +54,7 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	)
 
 	// CREATE HOST
+	//var kademliaDHT *dht.IpfsDHT
 	host, _ := libp2p.New(
 		addrs,
 		libp2p.Identity(prvKey),
@@ -62,6 +63,8 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 
 		//Cool stuff'
 		libp2p.EnableHolePunching(),
+		libp2p.NATPortMap(),
+		libp2p.EnableNATService(),
 	)
 
 	//log.Printf("[*] Your Multiaddress Is: /ip4/%s/tcp/%v/p2p/%s\n", Config.Host, Config.Port, host.ID().Pretty())
@@ -77,20 +80,18 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 		//log.Println(handlers)
 		stream_handler(stream, handlers)
 	})
-
 	//Init KDHT
-	kademliaDHT := init_DHT(ctx, host)
-	kademliaDHT.Context()
+	kademliaDHT := init_DHT(ctx, host, Config)
 	// boot from config
+	bootstrap(ctx, kademliaDHT)
 	boot(ctx, Config, host)
-
-	go rendezvous(ctx, host, kademliaDHT, Config)
+	//Rendezvous(ctx, host, kademliaDHT, Config)
 
 	// Stating mdns service and bootstraping peers
 	if serve == true {
 		start_mdns(host, Config, ctx)
 	} else {
-		go start_mdns(host, Config, ctx)
+		//go start_mdns(host, Config, ctx)
 	}
 
 	server := types.Host{

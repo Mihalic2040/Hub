@@ -13,20 +13,34 @@ import (
 	"github.com/multiformats/go-multiaddr"
 )
 
-func init_DHT(ctx context.Context, host host.Host) *dht.IpfsDHT {
-	// init DHT
-	kademliaDHT, err := dht.New(ctx, host)
-	if err != nil {
-		log.Println("[DHT] Fail to init DHT: ", err)
-	}
-	log.Println("[DHT] Init sucsesfull")
+func bootstrap(ctx context.Context, dht *dht.IpfsDHT) {
 	//Bootstrap
 	log.Println("[DHT] Running bootstrap thread")
-	if err := kademliaDHT.Bootstrap(ctx); err != nil {
+	if err := dht.Bootstrap(ctx); err != nil {
 		log.Println("[DHT] Fail to bootstrap DHT: ", err)
 	}
 
-	return kademliaDHT
+}
+
+func init_DHT(ctx context.Context, host host.Host, config types.Config) *dht.IpfsDHT {
+	// init DHT
+
+	if config.DHTServer == true {
+		kademliaDHT, err := dht.New(ctx, host, dht.Mode(dht.ModeAutoServer))
+		if err != nil {
+			log.Println("[DHT] Fail to init DHT: ", err)
+		}
+		log.Println("[DHT:Server MODE] Init sucsesfull")
+		return kademliaDHT
+	} else {
+		kademliaDHT, err := dht.New(ctx, host)
+		if err != nil {
+			log.Println("[DHT] Fail to init DHT: ", err)
+		}
+		log.Println("[DHT] Init sucsesfull")
+		return kademliaDHT
+	}
+
 }
 
 func boot(ctx context.Context, config types.Config, host host.Host) {
@@ -51,7 +65,7 @@ func boot(ctx context.Context, config types.Config, host host.Host) {
 		defer wg.Done()
 
 		if err := host.Connect(ctx, *peerinfo); err != nil {
-			log.Println("[DHT:Bootstrap] Fail to connect!!!")
+			log.Println("[DHT:Bootstrap] Fail to connect:", err)
 		} else {
 			log.Println("[DHT:Bootstrap] Successfully connected to node: ", *peerinfo)
 		}
