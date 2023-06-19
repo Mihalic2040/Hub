@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"log"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/Mihalic2040/Hub/src/utils"
 	"github.com/fatih/color"
 	"github.com/libp2p/go-libp2p"
+	"github.com/libp2p/go-libp2p-core/crypto"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/libp2p/go-libp2p/p2p/muxer/mplex"
@@ -34,9 +36,18 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 
 	// TEST
 
-	prvKey, err := utils.GeneratePrivateKeyFromString(Config.Secret)
-	if err != nil {
-		log.Fatal(err)
+	var prvKey crypto.PrivKey
+	var err error
+	if Config.Secret == "" {
+		prvKey, _, err = crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, rand.Reader)
+		if err != nil {
+			log.Fatal("[*] Error generating key pair: ", err)
+		}
+	} else {
+		prvKey, err = utils.GeneratePrivateKeyFromString(Config.Secret)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	taranspors := libp2p.ChainOptions(
@@ -81,6 +92,12 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 		//log.Println(handlers)
 		stream_handler(stream, handlers)
 	})
+	// This handler work with data stream handlers
+	host.SetStreamHandler(protocol.ID(Config.ProtocolId+"/stream/"), func(stream network.Stream) {
+		//Handle stream
+		data_stream(stream, handlers)
+	})
+
 	//Init KDHT
 	kademliaDHT := init_DHT(ctx, host, Config)
 	// boot from config
@@ -92,7 +109,7 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	if serve == true {
 		start_mdns(host, Config, ctx)
 	} else {
-		go start_mdns(host, Config, ctx)
+		//go start_mdns(host, Config, ctx)
 	}
 
 	server := types.Host{

@@ -37,12 +37,12 @@ func main() {
 	ctx := context.Background()
 	//fake config
 	config := types.Config{
-		Host:       "0.0.0.0",
-		Port:       "0",
-		Secret:     "MIHALIC2040",
-		Rendezvous: "rendezvous",
+		Host: "0.0.0.0",
+		Port: "0",
+		//Secret:     "MIHALIC2040",
+		Rendezvous: "Hub",
 		ProtocolId: "/hub/0.0.1",
-		Bootstrap:  "/ip4/0.0.0.0/udp/6666/quic/p2p/12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4",
+		Bootstrap:  "/ip4/141.145.193.111/udp/6666/quic/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
 	}
 
 	// runing server
@@ -50,7 +50,26 @@ func main() {
 		utils.GetFunctionName(MyHandler): MyHandler,
 	}
 
-	host_one = node.Server(ctx, handlers, config, false)
+	for {
+		node.Server(ctx, handlers, config, false)
+	}
+
+	// host_one = node.Server(ctx, handlers, config, false)
+
+	// go func() {
+	// 	for {
+	// 		peer_id := "12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4"
+
+	// 		data := api.Request{
+	// 			Payload: "Hello taras",
+	// 			Handler: "MyHandler",
+	// 		}
+
+	// 		res, _ := request.New(host_one, peer_id, &data)
+
+	// 		log.Println(res)
+	// 	}
+	// }()
 
 	http.HandleFunc("/", handleRequest)
 	http.ListenAndServe(":8080", nil)

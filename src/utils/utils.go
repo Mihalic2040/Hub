@@ -39,6 +39,7 @@ func SplitKey(key string) (string, string, string) {
 }
 
 func GeneratePrivateKeyFromString(input string) (crypto.PrivKey, error) {
+
 	// Calculate the SHA256 hash of the input string
 	hash := sha256.Sum256([]byte(input))
 

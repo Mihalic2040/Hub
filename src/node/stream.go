@@ -79,6 +79,10 @@ func stream_handler(stream network.Stream, handlers server.HandlerMap) {
 
 }
 
+
+func data_stream(stram network.Stream, handlers server.HandlerMap) {
+	
+}
 // func stream_handler(stream network.Stream, handlers server.HandlerMap) {
 // 	rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
 
