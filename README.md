@@ -35,81 +35,93 @@ Server
 package main
 
 import (
-    "context"
-
-    "github.com/Mihalic2040/Hub/src/node"
-    "github.com/Mihalic2040/Hub/src/proto/api"
-    "github.com/Mihalic2040/Hub/src/server"
-    "github.com/Mihalic2040/Hub/src/types"
-    "github.com/Mihalic2040/Hub/src/utils"
+	hub "github.com/Mihalic2040/Hub"
+	"github.com/Mihalic2040/Hub/src/proto/api"
+	"github.com/Mihalic2040/Hub/src/server"
+	"github.com/Mihalic2040/Hub/src/types"
+	"github.com/Mihalic2040/Hub/src/utils"
 )
 
-func Echo(input *api.Request) (response api.Response, err error) {
-    // Do some processing with the input data
-    // ...
+func MyHandler(input *api.Request) (response api.Response, err error) {
+	// Do some processing with the input data
+	// ...
 
-    // Return the output data and no error
-    return server.Response(input.Payload, 200), nil
+	// Return the output data and no error
+	return server.Response(input.Payload, 200), nil
 }
 
 func main() {
-    ctx := context.Background()
-    // Config
-    config := types.Config{
-        Host:       "0.0.0.0",
-        Port:       "6666",
-        Secret:     "SERVER",
-        Rendezvous: "Hub",
-        DHTServer:  true,
-        ProtocolId: "/hub/0.0.1",
-        Bootstrap:  "/ip4/0.0.0.0/tcp/6666/p2p/12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4",
-    }
+	// ctx := context.Background()
+	// //fake config
+	config := types.Config{
+		Host: "0.0.0.0",
+		Port: "0",
+		Secret:     "SERVER",
+		Rendezvous: "Hub",
+		DHTServer:  true,
+		ProtocolId: "/hub/0.0.1",
+		Bootstrap:  "/ip4/0.0.0.0/tcp/6666/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
+	}
 
-    // Runing server
-    handlers := server.HandlerMap{
-        utils.GetFunctionName(Echo): Echo,
-    }
+	app := &hub.App{}
 
-    node.Server(ctx, handlers, config, true)
+	app.Settings(config)
+
+	app.Handler(utils.GetFunctionName(MyHandler), MyHandler)
+
+	app.Start(true)
+
 
 }
+
 
 ```
 Request
 ```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	hub "github.com/Mihalic2040/Hub"
+	"github.com/Mihalic2040/Hub/src/proto/api"
+	"github.com/Mihalic2040/Hub/src/server"
+	"github.com/Mihalic2040/Hub/src/types"
+	"github.com/Mihalic2040/Hub/src/utils"
+)
+
+
+func handleRequest(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Fprintln(w, app.Host.Peerstore().Peers())
+}
+
+var app hub.App
+
 func main() {
-    ctx := context.Background()
-    // Config
-    config := types.Config{
-        Host:       "0.0.0.0",
-        Port:       "6666",
-        Secret:     "SERVER",
-        Rendezvous: "Hub",
-        DHTServer:  true,
-        ProtocolId: "/hub/0.0.1",
-        Bootstrap:  "/ip4/0.0.0.0/tcp/6666/p2p/12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4",
-    }
+	// ctx := context.Background()
+	// //fake config
+	config := types.Config{
+		Host: "0.0.0.0",
+		Port: "0",
+		//Secret:     "SERVER",
+		Rendezvous: "Hub",
+		DHTServer:  true,
+		ProtocolId: "/hub/0.0.1",
+		Bootstrap:  "/ip4/0.0.0.0/tcp/6666/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
+	}
 
-    // Runing server
-    handlers := server.HandlerMap{
-        utils.GetFunctionName(Echo): Echo,
-    }
+	//app := &hub.App{}
 
-    app := node.Server(ctx, handlers, config, false)
+	app.Settings(config)
 
 
-    req := api.Request{
-        Payload: "Bla bla bla",
-        Handler: "Echo",
-    }
+	app.Start(false)
 
-    user_id := "12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4"
+	http.HandleFunc("/", handleRequest)
+	http.ListenAndServe(":8080", nil)
 
-    res, err := request.new(app, user_id, req)
-    if err != nil {
-        //ERROR
-    }
-    
 }
 ```
 ## ToDo

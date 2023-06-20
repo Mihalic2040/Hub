@@ -17,34 +17,26 @@ import (
 	"github.com/libp2p/go-libp2p/p2p/muxer/mplex"
 	quic "github.com/libp2p/go-libp2p/p2p/transport/quic"
 	"github.com/libp2p/go-libp2p/p2p/transport/tcp"
-	"github.com/libp2p/go-libp2p/p2p/transport/websocket"
 	"github.com/multiformats/go-multiaddr"
 )
 
-func Server(ctx context.Context, handlers server.HandlerMap, Config types.Config, serve bool) types.Host {
-	host := Start_host(ctx, Config, handlers, serve)
-	//fmt.Println(host)
-	//server.Thread(handlers, input)
-	return host
-}
-
-func Start_host(ctx context.Context, Config types.Config, handlers server.HandlerMap, serve bool) types.Host {
+func Start_host(ctx context.Context, config types.Config, handlers server.HandlerMap, serve bool) types.App {
 
 	// 0.0.0.0 will listen on any interface device.
 
-	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/", Config.Host, Config.Port))
-	sourceMultiAddrQuic, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/udp/%s/quic", Config.Host, Config.Port))
+	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/", config.Host, config.Port))
+	sourceMultiAddrQuic, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/udp/%s/quic", config.Host, config.Port))
 
 	// TEST
 	var prvKey crypto.PrivKey
 	var err error
-	if Config.Secret == "" {
+	if config.Secret == "" {
 		prvKey, _, err = crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, rand.Reader)
 		if err != nil {
 			log.Fatalln("[*] Error generating key pair:", err)
 		}
 	} else {
-		prvKey, err = utils.GeneratePrivateKeyFromString(Config.Secret)
+		prvKey, err = utils.GeneratePrivateKeyFromString(config.Secret)
 		if err != nil {
 			log.Fatalln("[*] Error generating key pair:", err)
 		}
@@ -53,7 +45,6 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	taranspors := libp2p.ChainOptions(
 		libp2p.Transport(tcp.NewTCPTransport),
 		libp2p.Transport(quic.NewTransport),
-		libp2p.Transport(websocket.New),
 	)
 
 	muxers := libp2p.ChainOptions(
@@ -88,63 +79,36 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 
 	// Set a function as stream handler.
 	// This function is called when a peer initiates a connection and starts a stream with this peer.
-	host.SetStreamHandler(protocol.ID(Config.ProtocolId), func(stream network.Stream) {
+	host.SetStreamHandler(protocol.ID(config.ProtocolId), func(stream network.Stream) {
 		//log.Println("DEBUG: new steam in handler")
 		//log.Println(handlers)
 		stream_handler(stream, handlers)
 	})
 
 	// Data stream proto for streaming big amount of data
-	host.SetStreamHandler(protocol.ID(Config.ProtocolId+"/stream/"), func(stream network.Stream) {
+	host.SetStreamHandler(protocol.ID(config.ProtocolId+"/stream/"), func(stream network.Stream) {
 		data_stream(stream, handlers)
 	})
 
 	//Init KDHT
-	kademliaDHT := init_DHT(ctx, host, Config)
+	kademliaDHT := init_DHT(ctx, host, config)
 	// boot from config
 	bootstrap(ctx, kademliaDHT)
-	boot(ctx, Config, host)
+	boot(ctx, config, host)
 	//Rendezvous(ctx, host, kademliaDHT, Config)
 
 	// Stating mdns service and bootstraping peers
 	if serve == true {
-		start_mdns(host, Config, ctx)
+		start_mdns(host, config, ctx)
 	} else {
-		go start_mdns(host, Config, ctx)
+		go start_mdns(host, config, ctx)
 	}
 
-	server := types.Host{
+	server := types.App{
 		Host:   host,
 		Dht:    kademliaDHT,
-		Config: Config,
+		Config: config,
 	}
 
 	return server
 }
-
-// for {
-// 	// Find a peer by its ID
-// 	targetPeerID, err := peer.Decode("12D3KooWQXMKJFm6f3pWNHxHE8z7KqRaaDevnFKqyGahXQxj1CVN")
-// 	if err != nil {
-// 		fmt.Println("Invalid peer ID:", err)
-// 		return
-// 	}
-
-// 	peerInfo, err := kademliaDHT.FindPeer(context.Background(), targetPeerID)
-// 	if err != nil {
-// 		fmt.Println("Failed to find peer:", err)
-// 	}
-
-// 	// Create a stream to the peer
-// 	stream, err := host.NewStream(context.Background(), peerInfo.ID, protocol.ID(Config.ProtocolId))
-// 	if err == nil {
-// 		stream.Close()
-// 	}
-
-// 	// Use the stream for communication
-// 	// ...
-
-// 	// Remember to close the stream when done
-
-// 	time.Sleep(2 * time.Second)
-// }

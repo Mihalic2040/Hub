@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/Mihalic2040/Hub/src/server"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/libp2p/go-libp2p/core/host"
 )
@@ -20,8 +21,16 @@ type Config struct {
 	DHTServer  bool
 }
 
-type Host struct {
-	Host   host.Host
-	Dht    *dht.IpfsDHT
-	Config Config
+// type Host struct {
+// 	Host     host.Host
+// 	Dht      *dht.IpfsDHT
+// 	Config   Config
+// 	Handlers server.HandlerMap
+// }
+
+type App struct {
+	Host     host.Host
+	Dht      *dht.IpfsDHT
+	Config   Config
+	Handlers server.HandlerMap
 }

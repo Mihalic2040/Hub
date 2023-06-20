@@ -1,6 +1,6 @@
-compile:
-	go build -o build/hub
-	./build/hub
+client:
+	go build -o build/client examples/client/client.go
+	./build/client
 
 lib:
 	go build -buildmode=c-shared -o library.so main.go

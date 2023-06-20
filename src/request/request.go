@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	hub "github.com/Mihalic2040/Hub"
 	"github.com/Mihalic2040/Hub/src/proto/api"
-	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/libp2p/go-libp2p-core/protocol"
 	"google.golang.org/protobuf/proto"
 )
 
-func New(host types.Host, peerID string, data *api.Request) (*api.Response, error) {
+func New(host hub.App, peerID string, data *api.Request) (*api.Response, error) {
 	// Find a peer by its ID
 	targetPeerID, err := peer.Decode(peerID)
 	if err != nil {
