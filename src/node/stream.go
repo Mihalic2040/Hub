@@ -79,10 +79,19 @@ func stream_handler(stream network.Stream, handlers server.HandlerMap) {
 
 }
 
-
 func data_stream(stram network.Stream, handlers server.HandlerMap) {
-	
+	dataCh := make(chan []byte)
+
+	// Cool data capture system :З
+	go func() {
+		log.Println("Cool processing")
+	}()
+
+	data := <-dataCh
+
+	log.Println(data)
 }
+
 // func stream_handler(stream network.Stream, handlers server.HandlerMap) {
 // 	rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
 

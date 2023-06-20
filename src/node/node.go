@@ -9,7 +9,7 @@ import (
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
 	"github.com/Mihalic2040/Hub/src/utils"
-	"github.com/fatih/color"
+	color "github.com/fatih/color"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p-core/crypto"
 	"github.com/libp2p/go-libp2p/core/network"
@@ -17,6 +17,7 @@ import (
 	"github.com/libp2p/go-libp2p/p2p/muxer/mplex"
 	quic "github.com/libp2p/go-libp2p/p2p/transport/quic"
 	"github.com/libp2p/go-libp2p/p2p/transport/tcp"
+	"github.com/libp2p/go-libp2p/p2p/transport/websocket"
 	"github.com/multiformats/go-multiaddr"
 )
 
@@ -35,24 +36,24 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	sourceMultiAddrQuic, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/udp/%s/quic", Config.Host, Config.Port))
 
 	// TEST
-
 	var prvKey crypto.PrivKey
 	var err error
 	if Config.Secret == "" {
 		prvKey, _, err = crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, rand.Reader)
 		if err != nil {
-			log.Fatal("[*] Error generating key pair: ", err)
+			log.Fatalln("[*] Error generating key pair:", err)
 		}
 	} else {
 		prvKey, err = utils.GeneratePrivateKeyFromString(Config.Secret)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln("[*] Error generating key pair:", err)
 		}
 	}
 
 	taranspors := libp2p.ChainOptions(
 		libp2p.Transport(tcp.NewTCPTransport),
 		libp2p.Transport(quic.NewTransport),
+		libp2p.Transport(websocket.New),
 	)
 
 	muxers := libp2p.ChainOptions(
@@ -92,9 +93,9 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 		//log.Println(handlers)
 		stream_handler(stream, handlers)
 	})
-	// This handler work with data stream handlers
+
+	// Data stream proto for streaming big amount of data
 	host.SetStreamHandler(protocol.ID(Config.ProtocolId+"/stream/"), func(stream network.Stream) {
-		//Handle stream
 		data_stream(stream, handlers)
 	})
 
@@ -109,7 +110,7 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	if serve == true {
 		start_mdns(host, Config, ctx)
 	} else {
-		//go start_mdns(host, Config, ctx)
+		go start_mdns(host, Config, ctx)
 	}
 
 	server := types.Host{

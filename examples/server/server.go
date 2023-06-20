@@ -23,7 +23,7 @@ func main() {
 	//fake config
 	config := types.Config{
 		Host:       "0.0.0.0",
-		Port:       "6666",
+		Port:       "0",
 		Secret:     "SERVER",
 		Rendezvous: "Hub",
 		DHTServer:  true,

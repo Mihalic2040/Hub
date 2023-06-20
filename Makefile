@@ -11,3 +11,4 @@ proto:
 server:
 	go build -o build/server examples/server/server.go
 	./build/server
+

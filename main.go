@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 
 	"github.com/Mihalic2040/Hub/src/node"
 	"github.com/Mihalic2040/Hub/src/proto/api"
@@ -20,18 +18,18 @@ func MyHandler(input *api.Request) (response api.Response, err error) {
 	return server.Response(input.Payload, 200), nil
 }
 
-func handleRequest(w http.ResponseWriter, r *http.Request) {
-	// Get the peer ID from the request
-	// curl http://localhost:8080/ -X POST -d "peer_id="
+// func handleRequest(w http.ResponseWriter, r *http.Request) {
+// 	// Get the peer ID from the request
+// 	// curl http://localhost:8080/ -X POST -d "peer_id="
 
-	peers := host_one.Host.Peerstore().Peers()
+// 	peers := host_one.Host.Peerstore().Peers()
 
-	fmt.Fprintf(w, peers.String())
-}
+// 	fmt.Fprintf(w, peers.String())
+// }
 
-var (
-	host_one types.Host
-)
+// var (
+// 	host_one types.Host
+// )
 
 func main() {
 	ctx := context.Background()
@@ -39,10 +37,10 @@ func main() {
 	config := types.Config{
 		Host: "0.0.0.0",
 		Port: "0",
-		//Secret:     "MIHALIC2040",
+		// Secret:     "MIHALIC2040", // If Secret is "" genereting random Prvkey!!
 		Rendezvous: "Hub",
 		ProtocolId: "/hub/0.0.1",
-		Bootstrap:  "/ip4/141.145.193.111/udp/6666/quic/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
+		// Bootstrap:  "/ip4/0.0.0.0/udp/6666/quic/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
 	}
 
 	// runing server
@@ -50,27 +48,26 @@ func main() {
 		utils.GetFunctionName(MyHandler): MyHandler,
 	}
 
-	for {
-		node.Server(ctx, handlers, config, false)
-	}
-
-	// host_one = node.Server(ctx, handlers, config, false)
+	node.Server(ctx, handlers, config, true)
 
 	// go func() {
 	// 	for {
-	// 		peer_id := "12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4"
+	// 		// perr := "12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE"
 
-	// 		data := api.Request{
-	// 			Payload: "Hello taras",
-	// 			Handler: "MyHandler",
-	// 		}
+	// 		// data := api.Request{
+	// 		// 	Payload: "ggg",
+	// 		// }
 
-	// 		res, _ := request.New(host_one, peer_id, &data)
-
-	// 		log.Println(res)
+	// 		//res, err := request.New(host_one, perr, &data)
+	// 		// if err != nil {
+	// 		// 	log.Println(err)
+	// 		// } else {
+	// 		// 	log.Println(res)
+	// 		//}
 	// 	}
+
 	// }()
 
-	http.HandleFunc("/", handleRequest)
-	http.ListenAndServe(":8080", nil)
+	// http.HandleFunc("/", handleRequest)
+	// http.ListenAndServe(":8080", nil)
 }
