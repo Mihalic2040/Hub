@@ -22,19 +22,22 @@ func main() {
 	ctx := context.Background()
 	//fake config
 	config := types.Config{
-		Host:       "0.0.0.0",
-		Port:       "0",
-		Secret:     "SERVER",
+		Host: "0.0.0.0",
+		Port: "0",
+		// Secret:     "SERVER",
 		Rendezvous: "Hub",
 		DHTServer:  true,
 		ProtocolId: "/hub/0.0.1",
-		Bootstrap:  "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4",
+		Bootstrap:  "/ip4/141.145.193.111/tcp/6666/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
 	}
 
 	// runing server
 	handlers := server.HandlerMap{
 		utils.GetFunctionName(MyHandler): MyHandler,
 	}
-	node.Server(ctx, handlers, config, true)
+
+	for {
+		node.Server(ctx, handlers, config, false)
+	}
 
 }

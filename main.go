@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"net/http"
 
 	"github.com/Mihalic2040/Hub/src/node"
 	"github.com/Mihalic2040/Hub/src/proto/api"
@@ -31,6 +34,12 @@ func MyHandler(input *api.Request) (response api.Response, err error) {
 // 	host_one types.Host
 // )
 
+func handleRequest(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, app.Host.Network().Peers())
+}
+
+var app types.Host
+
 func main() {
 	ctx := context.Background()
 	//fake config
@@ -40,7 +49,7 @@ func main() {
 		// Secret:     "MIHALIC2040", // If Secret is "" genereting random Prvkey!!
 		Rendezvous: "Hub",
 		ProtocolId: "/hub/0.0.1",
-		// Bootstrap:  "/ip4/0.0.0.0/udp/6666/quic/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
+		Bootstrap:  "/ip4/141.145.193.111/udp/6666/quic/p2p/12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE",
 	}
 
 	// runing server
@@ -48,26 +57,9 @@ func main() {
 		utils.GetFunctionName(MyHandler): MyHandler,
 	}
 
-	node.Server(ctx, handlers, config, true)
+	app = node.Server(ctx, handlers, config, false)
 
-	// go func() {
-	// 	for {
-	// 		// perr := "12D3KooWQd1K1k8XA9xVEzSAu7HUCodC7LJB6uW5Kw4VwkRdstPE"
-
-	// 		// data := api.Request{
-	// 		// 	Payload: "ggg",
-	// 		// }
-
-	// 		//res, err := request.New(host_one, perr, &data)
-	// 		// if err != nil {
-	// 		// 	log.Println(err)
-	// 		// } else {
-	// 		// 	log.Println(res)
-	// 		//}
-	// 	}
-
-	// }()
-
-	// http.HandleFunc("/", handleRequest)
-	// http.ListenAndServe(":8080", nil)
+	log.Println("HTTP server started!!")
+	http.HandleFunc("/", handleRequest)
+	http.ListenAndServe(":8080", nil)
 }

@@ -17,7 +17,6 @@ import (
 	"github.com/libp2p/go-libp2p/p2p/muxer/mplex"
 	quic "github.com/libp2p/go-libp2p/p2p/transport/quic"
 	"github.com/libp2p/go-libp2p/p2p/transport/tcp"
-	"github.com/libp2p/go-libp2p/p2p/transport/websocket"
 	"github.com/multiformats/go-multiaddr"
 )
 
@@ -53,7 +52,6 @@ func Start_host(ctx context.Context, Config types.Config, handlers server.Handle
 	taranspors := libp2p.ChainOptions(
 		libp2p.Transport(tcp.NewTCPTransport),
 		libp2p.Transport(quic.NewTransport),
-		libp2p.Transport(websocket.New),
 	)
 
 	muxers := libp2p.ChainOptions(
