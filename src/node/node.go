@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/Mihalic2040/Hub/src/server"
 	"github.com/Mihalic2040/Hub/src/types"
@@ -28,7 +29,14 @@ func Start_host(ctx context.Context, config types.Config, handlers server.Handle
 
 	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/", config.Host, config.Port))
 	sourceMultiAddrQuic, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/udp/%s/quic", config.Host, config.Port))
-	sourceMultiAddrWs, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/ws", config.Host, config.Port))
+	var sourceMultiAddrWs multiaddr.Multiaddr
+	if config.Port != "0" {
+		port, _ := strconv.Atoi(config.Port)
+		portNumber := strconv.Itoa(port + 1)
+		sourceMultiAddrWs, _ = multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/ws", config.Host, portNumber))
+	} else {
+		sourceMultiAddrWs, _ = multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/ws", config.Host, config.Port))
+	}
 
 	// TEST
 	var prvKey crypto.PrivKey
