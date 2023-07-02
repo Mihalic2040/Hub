@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	hub "github.com/Mihalic2040/Hub"
 	"github.com/Mihalic2040/Hub/src/proto/api"
@@ -49,7 +50,8 @@ func main() {
 	app.Start(false)
 
 	go func() {
-		peer := "QmdqDDcWTD1QghjL8KCk9s8gMzKsx6EeQb7bKzcmdA8gyE"
+		time.Sleep(time.Second * 5)
+		peer := "12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4"
 
 		data := api.Request{
 			Payload: "gg",

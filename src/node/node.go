@@ -15,8 +15,10 @@ import (
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/libp2p/go-libp2p/p2p/muxer/mplex"
+	"github.com/libp2p/go-libp2p/p2p/muxer/yamux"
 	quic "github.com/libp2p/go-libp2p/p2p/transport/quic"
 	"github.com/libp2p/go-libp2p/p2p/transport/tcp"
+	"github.com/libp2p/go-libp2p/p2p/transport/websocket"
 	"github.com/multiformats/go-multiaddr"
 )
 
@@ -26,6 +28,7 @@ func Start_host(ctx context.Context, config types.Config, handlers server.Handle
 
 	sourceMultiAddr, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/", config.Host, config.Port))
 	sourceMultiAddrQuic, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/udp/%s/quic", config.Host, config.Port))
+	sourceMultiAddrWs, _ := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s/ws", config.Host, config.Port))
 
 	// TEST
 	var prvKey crypto.PrivKey
@@ -45,26 +48,32 @@ func Start_host(ctx context.Context, config types.Config, handlers server.Handle
 	taranspors := libp2p.ChainOptions(
 		libp2p.Transport(tcp.NewTCPTransport),
 		libp2p.Transport(quic.NewTransport),
+
+		//For js nodes
+		libp2p.Transport(websocket.New),
 	)
 
 	muxers := libp2p.ChainOptions(
 		libp2p.Muxer("/mplex/", mplex.DefaultTransport),
+
+		//For js nodes
+		libp2p.Muxer("/yamux/", yamux.DefaultTransport),
 	)
 
 	addrs := libp2p.ListenAddrStrings(
 		sourceMultiAddr.String(),
 		sourceMultiAddrQuic.String(),
+		sourceMultiAddrWs.String(),
 	)
 
 	// CREATE HOST
-	//var kademliaDHT *dht.IpfsDHT
 	host, _ := libp2p.New(
 		addrs,
 		libp2p.Identity(prvKey),
 		taranspors,
 		muxers,
 
-		//Cool stuff'
+		//Cool stuff
 		libp2p.EnableHolePunching(),
 		libp2p.NATPortMap(),
 		libp2p.EnableNATService(),
@@ -85,6 +94,7 @@ func Start_host(ctx context.Context, config types.Config, handlers server.Handle
 		stream_handler(stream, handlers)
 	})
 
+	//WORK IN PROGRESS
 	// Data stream proto for streaming big amount of data
 	host.SetStreamHandler(protocol.ID(config.ProtocolId+"/stream/"), func(stream network.Stream) {
 		data_stream(stream, handlers)
