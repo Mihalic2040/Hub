@@ -12,6 +12,7 @@ require (
 require (
 	github.com/libp2p/go-mplex v0.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
+	golang.org/x/mobile v0.0.0-20230531173138-3c911d8e3eda // indirect
 )
 
 require (
