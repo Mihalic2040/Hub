@@ -125,9 +125,9 @@ func main() {
 }
 ```
 ## ToDo
-
-- [ ] Encryption protobuf
-- [ ] Relays
+- [ ] Dynamic serialization (For support json and other cool type)
+- [ ] Encryption
+- [x] Relays
 - [ ] Cool logo
 ## Feedback
 
