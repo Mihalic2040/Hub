@@ -25,10 +25,9 @@ func (app *App) Settings(conf types.Config) {
 	app.Config = conf
 }
 
-func (app *App) Start(serve bool) {
+func (app *App) Start(serve bool) *types.App {
 	ctx := context.Background()
 	host := node.Start_host(ctx, app.Config, app.Handlers, serve)
-	app.Dht = host.Dht
-	app.Host = host.Host
-	app.Config = host.Config
+	app.App = host
+	return &host
 }
