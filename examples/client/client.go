@@ -50,17 +50,20 @@ func main() {
 	app.Start(false)
 
 	go func() {
-		time.Sleep(time.Second * 5)
-		peer := "12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4"
+		for {
+			time.Sleep(time.Second * 1)
+			peer := "12D3KooWGQ4ncdUVMSaVrWrCU1fyM8ZdcVvuWa7MdwqkUu4SSDo4"
 
-		data := api.Request{
-			Payload: "gg",
-			Handler: "MyHandler",
+			data := api.Request{
+				Payload: "gg",
+				Handler: "MyHandler",
+			}
+
+			res, err := request.New(app, peer, &data)
+
+			log.Println(res, err)
 		}
 
-		res, err := request.New(app, peer, &data)
-
-		log.Println(res, err)
 	}()
 
 	http.HandleFunc("/", handleRequest)
